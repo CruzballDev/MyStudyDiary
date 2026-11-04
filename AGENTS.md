@@ -18,6 +18,8 @@ Web estática para registrar sesiones de estudio y motivarse viendo la racha de 
 - Varias sesiones el mismo día cuentan como un solo día. Las fechas futuras no suman.
 - Mejor racha = tramo histórico más largo de días consecutivos con sesión, ignorando fechas futuras. Valor derivado: se recalcula en cada render, no se guarda en localStorage.
 - Plural: mostrar "1 día seguido" / "N días seguidos" en ambas rachas (helper `textoDias()` en `app.js`).
+- Total semanal de minutos: la semana va de lunes a domingo; solo suman fechas hasta hoy (las futuras no). Formato: "N min" y a partir de 60 "X h" / "X h Y min" (helpers `obtenerInicioSemana()`, `calcularMinutosSemana()`, `textoTiempo()` en `app.js`).
+- Total mensual de días y minutos: días distintos con al menos 1 sesión desde el día 1 del mes hasta hoy (las futuras no suman ni días ni minutos); minutos con el mismo rango. Formato: "1 día" / "N días" y minutos con `textoTiempo()` (helpers `obtenerInicioMes()`, `calcularResumenMes()`, `textoDiasMes()` en `app.js`). Valor derivado: se recalcula en cada render, no se guarda en localStorage.
 ## Forma de trabajar
 - Haz solo lo que se pide: no añadas funcionalidades por tu cuenta.
 - Cambios pequeños y enfocados; no reescribas lo que ya funciona.

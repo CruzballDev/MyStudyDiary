@@ -113,6 +113,19 @@ body {
   }
 }
 
+.total-semana,
+.total-mes {
+  text-align: center;
+  color: var(--color-suave);
+  margin-top: -8px;
+  font-size: 0.9rem;
+}
+
+.total-semana strong,
+.total-mes strong {
+  color: var(--color-primario);
+}
+
 .campo {
   margin-bottom: 14px;
 }

@@ -11,6 +11,9 @@ const rachaNumero = document.getElementById("racha");
 const rachaTexto = document.getElementById("racha-texto");
 const mejorRachaNumero = document.getElementById("mejor-racha");
 const mejorRachaTexto = document.getElementById("mejor-racha-texto");
+const totalSemana = document.getElementById("total-semana");
+const totalSemanaValor = document.getElementById("total-semana-valor");
+const totalMesValor = document.getElementById("total-mes-valor");
 
 function obtenerFechaLocal(date) {
   const anio = date.getFullYear();
@@ -109,6 +112,62 @@ function textoDias(cantidad) {
   return cantidad === 1 ? "día seguido" : "días seguidos";
 }
 
+// La semana de estudio va de lunes a domingo. Devuelve el lunes local de la semana actual.
+function obtenerInicioSemana() {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const diasDesdeLunes = (hoy.getDay() + 6) % 7;
+  return sumarDias(hoy, -diasDesdeLunes);
+}
+
+function calcularMinutosSemana(sesiones) {
+  const inicio = obtenerFechaLocal(obtenerInicioSemana());
+  const hoy = obtenerFechaLocal(new Date());
+
+  let total = 0;
+  for (const sesion of sesiones) {
+    if (sesion.fecha >= inicio && sesion.fecha <= hoy) {
+      total += Number(sesion.minutos) || 0;
+    }
+  }
+  return total;
+}
+
+// El total del mes cuenta desde el día 1 del mes actual (fecha local).
+function obtenerInicioMes() {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  return new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+}
+
+// Días distintos con sesión y minutos totales acumulados en lo que va de mes.
+// Solo cuentan fechas hasta hoy: las futuras no suman ni días ni minutos.
+function calcularResumenMes(sesiones) {
+  const inicio = obtenerFechaLocal(obtenerInicioMes());
+  const hoy = obtenerFechaLocal(new Date());
+
+  const diasConSesion = new Set();
+  let total = 0;
+  for (const sesion of sesiones) {
+    if (sesion.fecha >= inicio && sesion.fecha <= hoy) {
+      diasConSesion.add(sesion.fecha);
+      total += Number(sesion.minutos) || 0;
+    }
+  }
+  return { dias: diasConSesion.size, minutos: total };
+}
+
+function textoDiasMes(dias) {
+  return dias === 1 ? "1 día" : `${dias} días`;
+}
+
+function textoTiempo(minutos) {
+  if (minutos < 60) return `${minutos} min`;
+  const horas = Math.floor(minutos / 60);
+  const resto = minutos % 60;
+  return resto === 0 ? `${horas} h` : `${horas} h ${resto} min`;
+}
+
 function formatearFecha(textoFecha) {
   return crearFechaLocal(textoFecha).toLocaleDateString("es-ES", {
     weekday: "short",
@@ -153,6 +212,12 @@ function renderizar(sesiones) {
   const mejorRacha = calcularMejorRacha(sesiones);
   mejorRachaNumero.textContent = mejorRacha;
   mejorRachaTexto.textContent = textoDias(mejorRacha);
+
+  const minutosSemana = calcularMinutosSemana(sesiones);
+  totalSemanaValor.textContent = textoTiempo(minutosSemana);
+
+  const resumenMes = calcularResumenMes(sesiones);
+  totalMesValor.textContent = `${textoDiasMes(resumenMes.dias)} y ${textoTiempo(resumenMes.minutos)}`;
 }
 
 formulario.addEventListener("submit", (evento) => {
